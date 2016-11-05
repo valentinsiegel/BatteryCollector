@@ -7,3 +7,11 @@ ABatteryPickup::ABatteryPickup() {
 
 	getMesh()->SetSimulatePhysics(true);
 }
+
+void ABatteryPickup::WasCollected_Implementation()
+{
+	//Calls paren for logging code
+	Super::WasCollected_Implementation();
+	// Destroy the object
+	Destroy();
+}

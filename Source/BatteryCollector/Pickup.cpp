@@ -42,4 +42,13 @@ void APickup::setActive(bool newState)
 	isActivated = newState;
 }
 
+void APickup::WasCollected_Implementation()
+{
+	// Get the name of the object
+	FString PickupDebugString = GetName();
+	// Prints a log with name of the object
+	UE_LOG(LogClass, Log, TEXT("You have collected %s"), *PickupDebugString);
+}
+
+
 

@@ -29,6 +29,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Pickup")
 	void setActive(bool newState);
 
+	// Function that is called when object is collected, can be re implemented by children & blueprints
+	UFUNCTION(BlueprintNativeEvent)
+	void WasCollected();
+	virtual void WasCollected_Implementation();
+
 protected:
 
 	//if the pickup can be used
