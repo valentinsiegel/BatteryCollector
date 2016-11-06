@@ -73,11 +73,23 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
 	float InitialPower;
 
+	// Base Speed of the character when power = 0
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
+	float BaseSpeed;
+
+	// Speed multiplier when character picks up batteries
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
+	float SpeedFactor;
+
+	// Set new effects can be done through blueprint
+	UFUNCTION(BlueprintImplementableEvent, Category = "Power")
+	void PowerChangeEffect();
+
 private:
 
 	// Current level of power for the character
 	UPROPERTY(VisibleAnywhere, Category = "Power")
-		float CurrentPower;
+	float CurrentPower;
 
 public:
 	/** Returns CameraBoom subobject **/

@@ -44,8 +44,13 @@ ABatteryCollectorCharacter::ABatteryCollectorCharacter()
 	CollectionSphere->AttachTo(RootComponent);
 	CollectionSphere->SetSphereRadius(300.f);
 
+	// Initialize power
 	InitialPower = 2000.f;
 	CurrentPower = InitialPower;
+
+	// Initialize speed
+	BaseSpeed = 10.0f;
+	SpeedFactor = 0.75f;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -94,7 +99,12 @@ float ABatteryCollectorCharacter::GetCurrentPower()
 
 void ABatteryCollectorCharacter::UpdateCurrentPower(float PowerChange)
 {
+	// Sets new power
 	CurrentPower = CurrentPower + PowerChange;
+	// Sets the new speed base on new power value
+	GetCharacterMovement()->MaxWalkSpeed = BaseSpeed + SpeedFactor * CurrentPower;
+	// Calls visual effect
+	PowerChangeEffect();
 }
 
 void ABatteryCollectorCharacter::OnResetVR()
