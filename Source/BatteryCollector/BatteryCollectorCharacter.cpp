@@ -4,6 +4,7 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "BatteryCollectorCharacter.h"
 #include "Pickup.h"
+#include "BatteryPickup.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ABatteryCollectorCharacter
@@ -43,6 +44,9 @@ ABatteryCollectorCharacter::ABatteryCollectorCharacter()
 	CollectionSphere->AttachTo(RootComponent);
 	CollectionSphere->SetSphereRadius(300.f);
 
+	InitialPower = 2000.f;
+	CurrentPower = InitialPower;
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -78,6 +82,20 @@ void ABatteryCollectorCharacter::SetupPlayerInputComponent(class UInputComponent
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ABatteryCollectorCharacter::OnResetVR);
 }
 
+float ABatteryCollectorCharacter::GetInitialPower()
+{
+	return InitialPower;
+}
+
+float ABatteryCollectorCharacter::GetCurrentPower()
+{
+	return CurrentPower;
+}
+
+void ABatteryCollectorCharacter::UpdateCurrentPower(float PowerChange)
+{
+	CurrentPower = CurrentPower + PowerChange;
+}
 
 void ABatteryCollectorCharacter::OnResetVR()
 {
@@ -144,20 +162,39 @@ void ABatteryCollectorCharacter::MoveRight(float Value)
 
 void ABatteryCollectorCharacter::CollectPickups()
 {
-	//
+	// We look for actors in the collection sphere
 	TArray<AActor*> CollectedActors;
 	CollectionSphere->GetOverlappingActors(CollectedActors);
 
+	float CollectedPower = 0;
+
+	// For every actors
 	for (int32 iCollected = 0; iCollected < CollectedActors.Num(); iCollected++) {
+		
+		// We try to cast them as Pickup objects
 		APickup* const CollectedPickup = Cast<APickup>(CollectedActors[iCollected]);
 
+		// If Pickup is eligible for pickup
 		if (CollectedPickup && !CollectedPickup->IsPendingKill() && CollectedPickup->isActive()) {
 
 			// Runs implementations of the WasCollected code
 			CollectedPickup->WasCollected();
 
+			// Try to cast it as a battery
+			ABatteryPickup* const CollectedBattery = Cast<ABatteryPickup>(CollectedPickup);
+
+			// If successful then store power from battery
+			if (CollectedBattery) {
+				CollectedPower += CollectedBattery->GetBatteryPower();
+			}
+
 			//Deactivate Pickup to prevent further Pickuos
 			CollectedPickup->setActive(false);
 		}
+	}
+
+	// Updates character power with all collected power
+	if (CollectedPower > 0) {
+		UpdateCurrentPower(CollectedPower);
 	}
 }

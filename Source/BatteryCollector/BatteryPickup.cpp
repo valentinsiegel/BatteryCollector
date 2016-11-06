@@ -6,6 +6,8 @@
 ABatteryPickup::ABatteryPickup() {
 
 	getMesh()->SetSimulatePhysics(true);
+
+	BatteryPower = 200.f;
 }
 
 void ABatteryPickup::WasCollected_Implementation()
@@ -14,4 +16,9 @@ void ABatteryPickup::WasCollected_Implementation()
 	Super::WasCollected_Implementation();
 	// Destroy the object
 	Destroy();
+}
+
+float ABatteryPickup::GetBatteryPower()
+{
+	return BatteryPower;
 }
